@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_from_directory, jsonify
+from flask import Flask, render_template, request, send_from_directory
 from dotenv import load_dotenv
 from openai import OpenAI
 import sqlite3
@@ -35,7 +35,7 @@ def css(filename):
     return send_from_directory("css", filename)
 
 
-@app.route("/students", methods=["GET"])
+@app.route("/students")
 def get_students():
     conn = get_db_connection()
     students = conn.execute(
@@ -57,18 +57,8 @@ def get_students():
     return html
 
 
-@app.route("/students/<int:student_id>", methods=["GET"])
+@app.route("/students/<int:student_id>")
 def get_student(student_id):
-    if 'student_id' not in request.args:
-        return jsonify({"error": "Missing student ID"}), 400
-
-    try:
-        student_id = int(request.args['student_id'])
-        if student_id < 1 or student_id > 100:
-            return jsonify({"error": "Invalid student ID"}), 400
-    except ValueError:
-        return jsonify({"error": "Invalid student ID format"}), 400
-
     conn = get_db_connection()
     student = conn.execute(
         "SELECT student_id, student_name, subject_code FROM students WHERE student_id = ?",
