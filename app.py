@@ -85,7 +85,7 @@ def get_student_by_id():
     if not student_id_raw:
         return "<p>Student ID is required.</p>", 400
 
-    if not student_id_raw.isdigit():
+    if not student_id_raw.isdigit:
         return "<p>Student ID must be a positive integer.</p>", 400
 
     return get_student(int(student_id_raw))

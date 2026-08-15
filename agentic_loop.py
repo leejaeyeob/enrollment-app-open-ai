@@ -1,9 +1,12 @@
 import os
 import sqlite3
+import re
 from pathlib import Path
 
 from dotenv import load_dotenv
 from openai import OpenAI
+
+SUBJECT_CODE_PATTERN = re.compile(r"[A-Z]{3}[0-9]{3}", re.ASCII)
 
 ENV_PATH = Path(__file__).with_name(".env")
 load_dotenv(dotenv_path=ENV_PATH)
@@ -27,13 +30,13 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:0.5b")
 def validate_student(student):
     student_id, student_name, subject_code = student
 
-    if not isinstance(student_id, int):
-        return False, "student_id must be an integer"
+    if type(student_id) is not int or not 1<= student_id:
+        return False, "student_id must be an positive integer"
 
-    if not student_name:
+    if type(student_name) is not str or not student_name.strip():
         return False, "student_name is required"
 
-    if not subject_code:
+    if type(subject_code) is not str or not subject_code.strip() or not SUBJECT_CODE_PATTERN.fullmatch(subject_code):
         return False, "subject_code is required"
 
     return True, "ok"
