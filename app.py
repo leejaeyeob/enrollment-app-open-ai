@@ -67,7 +67,7 @@ def get_student(student_id):
     conn.close()
 
     if student is None:
-        return "<p>Student not found.</p>", 404
+        return f"<p>Student {student_id} not found.</p> <p>Please check the student ID again.</p>", 404
 
     return (
         f"<p>"
