@@ -249,6 +249,7 @@ def get_review_agent_advice(
         "- Do not invent new database fields.\n"
         "- Do not invent new endpoints.\n"
         "- Do not suggest new features.\n"
+        "- Agent integration or interaction is outside of the review scope.\n"
         "- Identify only evidence-backed risks "
         "or corrections.\n"
         "- If no evidence-backed risk exists, say so.\n"
