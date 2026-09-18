@@ -85,11 +85,40 @@ def get_student_by_id():
     if not student_id_raw:
         return "<p>Student ID is required.</p>", 400
 
-    if not student_id_raw.isdigit:
+    if not student_id_raw.isdigit():
         return "<p>Student ID must be a positive integer.</p>", 400
 
     return get_student(int(student_id_raw))
 
+@app.route("/students/by-subject")
+def get_students_by_subject():
+    subject_code = request.args.get("subject_code", "").strip().upper()
+
+    if not subject_code:
+        return "<p>Subject code is required.</p>", 400
+
+    conn = get_db_connection()
+    students = conn.execute(
+        "SELECT student_id, student_name, subject_code FROM students WHERE subject_code = ?",
+        (subject_code,)
+    ).fetchall()
+    conn.close()
+
+    if not students:
+        return f"<p>No students found for subject code {subject_code}.</p>", 404
+
+    html = "<ul>"
+    for student in students:
+        html += (
+            f"<li>"
+            f"{student['student_id']} - "
+            f"{student['student_name']} - "
+            f"{student['subject_code']}"
+            f"</li>"
+        )
+    html += "</ul>"
+
+    return html
 
 @app.route("/ask", methods=["POST"])
 def ask_local_agent():
