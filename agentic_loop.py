@@ -105,7 +105,7 @@ def observe_live_endpoints():
         results.append(f"/students -> error: {exc}")
 
     try:
-        response = request.get("http://127.0.0.1:5000/students/by-subject?subject_code=ASD101", timeout = 5)
+        response = requests.get("http://127.0.0.1:5000/students/by-subject?subject_code=ASD101", timeout = 5)
         results.append(f"/students/by-subject -> HTTP {response.status_code}")
     except Exception as exc:
         results.append(f"/students/by-subject -> error: {exc}")
