@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, send_from_directory
 from dotenv import load_dotenv
 from openai import OpenAI
+from pathlib import Path
 import sqlite3
 import os
 
@@ -18,6 +19,11 @@ client = OpenAI(
     api_key="ollama"
 )
 
+PROMPT_DIR = Path(__file__).with_name("prompts")
+
+def load_prompt(filename):
+    prompt_path = PROMPT_DIR / filename
+    return prompt_path.read_text(encoding="utf-8").strip()
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE_NAME)
@@ -85,7 +91,7 @@ def get_student_by_id():
     if not student_id_raw:
         return "<p>Student ID is required.</p>", 400
 
-    if not student_id_raw.isdigit():
+    if not student_id_raw.isdigit() or int(student_id_raw) <= 0:
         return "<p>Student ID must be a positive integer.</p>", 400
 
     return get_student(int(student_id_raw))
@@ -159,6 +165,50 @@ def ask_local_agent():
             503,
         )
 
+@app.route("/ask-with-context", methods=["POST"])
+def ask_with_context():
+    question = request.form.get("question", "").strip()
+
+    if not question:
+        return "<p>Question is required.</p>", 400
+
+    try:
+        system_prompt = load_prompt("implementation_system_prompt.txt")
+        context_prompt = load_prompt("context_qa_task_prompt.txt")
+
+        final_prompt = f"""
+
+{context_prompt}
+
+User Question: 
+
+{question}
+"""
+        response = client.chat.completions.create(
+            model=OLLAMA_MODEL,
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt
+                },
+                {
+                    "role": "user",
+                    "content": final_prompt
+                }
+            ],
+            max_tokens=300,
+            temperature=0,
+        )
+
+        answer = response.choices[0].message.content
+        return f"<p>{answer}</p>"
+
+    except Exception as exc:
+        return(
+            "<p>Context-aware request failed.</p>"
+            f"<pre>{exc}</pre>",
+            503,
+        )
 
 if __name__ == "__main__":
     app.run(debug=True)
