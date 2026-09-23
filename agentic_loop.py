@@ -245,12 +245,6 @@ def get_implementation_agent_advice(observe_message):
         "{{VALIDATION_EVIDENCE}}", observe_message
     )
 
-    final_prompt = f"{task_prompt}\n"
-
-    print("\n---------FINAL PROMPT-------")
-    print(final_prompt)
-    print("----------------------------\n")
-
     return call_model(
         IMPLEMENTATION_MODEL, system_prompt, task_prompt, 120
     )
