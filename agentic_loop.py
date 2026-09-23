@@ -241,24 +241,33 @@ def get_implementation_agent_advice(observe_message):
     system_prompt = load_prompt("implementation_system_prompt.txt")
     task_prompt = load_prompt("implementation_task_prompt.txt")
 
-    user_prompt = f"""Validation Evidence: {observe_message}"""
+    task_prompt = task_prompt.replace(
+        "{{VALIDATION_EVIDENCE}}", observe_message
+    )
+
+    final_prompt = f"{task_prompt}\n"
+
+    print("\n---------FINAL PROMPT-------")
+    print(final_prompt)
+    print("----------------------------\n")
 
     return call_model(
-        IMPLEMENTATION_MODEL,system_prompt,f"{task_prompt}\n\n{user_prompt}",120
+        IMPLEMENTATION_MODEL, system_prompt, task_prompt, 120
     )
 
 def get_review_agent_advice(implementation_message, observe_message):
     review_system_prompt = load_prompt("review_system_prompt.txt")
     review_task_prompt = load_prompt("review_task_prompt.txt")
 
-    review_request = f"""
-Implementation Recommendation: {implementation_message}
-
-Validation Evidence: {observe_message}
-"""
+    review_task_prompt = review_task_prompt.replace(
+        "{{IMPLEMENTATION_RECOMMENDATION}}", implementation_message
+    )
+    review_task_prompt = review_task_prompt.replace(
+        "{{VALIDATION_EVIDENCE}}", observe_message
+    )
 
     return call_model(
-        REVIEW_MODEL, review_system_prompt, f"{review_task_prompt}\n\n{review_request}", 150
+        REVIEW_MODEL, review_system_prompt, review_task_prompt, 150
     )
 
 def human_review():
