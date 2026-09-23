@@ -1,6 +1,13 @@
 Review Target: {{REVIEW_TARGET}}
 
-The Flask app must be running. The evidence below comes from live HTTP requests and database validation.
+RULES:
+- Duplicate subject_code values are valid: multiple students may
+  enrol in the same subject. Do not recommend add a constraint to ensure subject_code is unique. 
+- Never recommend UNIQUE on subject_code or treat duplicates as errors.
+- Recommend an improvement only when the supplied evidence
+  demonstrates a specific defect.
+- If the evidence reports only valid rows and no defect, return exactly:
+  No evidence-backed improvement identified.
 
 Live Validation Evidence:
 {{VALIDATION_EVIDENCE}}
