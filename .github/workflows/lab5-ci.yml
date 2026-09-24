@@ -70,7 +70,6 @@ jobs:
 
       - name: Create reports directory
         run: mkdir -p reports
-        working-directory: enrollment-app-open-ai
 
       - name: Generate report.json
         run: |
@@ -105,4 +104,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: lab5-report
-          path: enrollment-app-open-ai/reports
+          path: reports
